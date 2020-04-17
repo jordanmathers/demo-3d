@@ -6,10 +6,9 @@
     <title>3d Building DEMO</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
+    <!-- Assembly CSS -->
+    <link href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css" rel="stylesheet">
+    <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.js"></script>
 
     <!-- Mapbox GL -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
@@ -69,32 +68,24 @@
             <h1>Test</h1>
         </div>
 
-        <div class="btn-group d-flex">
-            <button type="button" class="btn btn-secondary w-100">Existing</button>
-            <button type="button" class="btn btn-secondary w-100">Proposed</button>
+        <div class='toggle-group mr18'>
+            <label class='toggle-container'>
+                <input checked name='toggle-1' type='radio' />
+                <div class='toggle'>Existing</div>
+            </label>
+            <label class='toggle-container'>
+                <input name='toggle-1' type='radio' />
+                <div class='toggle'>Proposed</div>
+            </label>
         </div>
 
-        <div class="dropdown d-flex">
-            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Select Styling
-            </button>
-            <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">01</a>
-                <a class="dropdown-item" href="#">02</a>
-                <a class="dropdown-item" href="#">03</a>
-            </div>
+        <div class='select-container'>
+            <select class='select'>
+                <option>default</option>
+                <option>two</option>
+            </select>
+            <div class='select-arrow'></div>
         </div>
-
-        <table id="table" class="table">
-            <thead>
-                <tr>
-                    <th data-field="key">Property</th>
-                    <th data-field="val">Value</th>
-                </tr>
-            </thead>
-        </table>
-
 
     </div>
 
@@ -139,7 +130,6 @@
             });
 
             map.on('click', 'buildings-3d', function (e) {
-
                 if (e.features.length > 0) {
                     if (buildingId) {
                         map.setFeatureState(
@@ -156,48 +146,10 @@
             });
 
             map.on('click', 'buildings-3d', function (e) {
-
-                var data =
-                    [
-                        {
-                            "key": "Area",
-                            "val": e.features[0].properties.area
-                        },
-                        {
-                            "key": "Avg Eave Height",
-                            "val": e.features[0].properties.averageEaveHeight
-                        },
-                        {
-                            "key": "Building Id",
-                            "val": e.features[0].properties.buildingId
-                        },
-                        {
-                            "key": "Coverage Type",
-                            "val": e.features[0].properties.coverageType
-                        },
-                        {
-                            "key": "Elevation",
-                            "val": e.features[0].properties.elevation
-                        },
-                        {
-                            "key": "Estimated Levels",
-                            "val": e.features[0].properties.estimatedLevels
-                        },
-                        {
-                            "key": "Max Roof Height",
-                            "val": e.features[0].properties.maximumRoofHeight
-                        },
-                        {
-                            "key": "Zonings",
-                            "val": e.features[0].properties.zonings
-                        }
-                    ]
-            });
-
-            $(function () {
-                $('#table').bootstrapTable({
-                    data: data
-                });
+                new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(e.features[0].properties.buildingId)
+                    .addTo(map);
             });
 
             // Change the cursor to a pointer when the mouse is over the states layer.
@@ -212,19 +164,6 @@
         });
 
     </script>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
 
 </body>
 
