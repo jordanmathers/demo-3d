@@ -132,6 +132,13 @@
                     'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/buildings.geojson'
             });
 
+            map.addSource('buildings2', {
+                'type': 'geojson',
+                'generateId': true,
+                'data':
+                    'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/buildings2.geojson'
+            });
+
             map.addLayer({
                 'id': 'buildings-3d',
                 'type': 'fill-extrusion',
@@ -149,6 +156,23 @@
                 }
             });
 
+            map.addLayer({
+                'id': 'buildings-3d-2',
+                'type': 'fill-extrusion',
+                'source': 'buildings2',
+                'layout': {},
+                'paint': {
+                    'fill-extrusion-height': ['get', 'maximumRoofHeight'],
+                    'fill-extrusion-opacity': 0.6,
+                    'fill-extrusion-color': [
+                        'case',
+                        ['boolean', ['feature-state', 'clicked'], false],
+                        '#a6bddb',
+                        '#d95f0e'
+                    ]
+                }
+            });
+            
             map.on('click', 'buildings-3d', function (e) {
 
                 if (e.features.length > 0) {
