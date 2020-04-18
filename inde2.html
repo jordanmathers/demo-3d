@@ -155,6 +155,18 @@
 
         map.on('load', function () {
 
+            var layers = ['existing', 'option01', 'option02', 'option03']
+
+            layers.forEach(function (layer) {
+
+                map.addSource(layer, {
+                    'type': 'geojson',
+                    'generateId': true,
+                    'data':
+                        'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/context.geojson'
+                });
+            })
+
             map.addSource('context-s', {
                 'type': 'geojson',
                 'generateId': true,
@@ -400,7 +412,7 @@
                     });
                 };
 
-                
+
             };
 
             var area = [
