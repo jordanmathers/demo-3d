@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 
+<!-- TODO unit label, land use, stepped legends, planning layers -->
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -65,6 +67,15 @@
             margin: 0 0 5px;
         }
 
+        .map-overlay-inner label .small {
+            display: block;
+            float : right;
+            font-weight: lighter;
+            margin: 0 0 5px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
         .map-overlay-inner button {
             display: inline-block;
             width: 36px;
@@ -88,6 +99,13 @@
             margin-right: 10px;
             width: 12px;
         }
+
+        hr.line {
+            display: inline-block;
+            border: 0.5px solid #cccccc;
+            width: 100%;
+        }
+
     </style>
 </head>
 
@@ -116,8 +134,10 @@
                 </select>
             </fieldset>
             <fieldset>
+                
                 <div id="legend-gradient" style="display: none;">
-                    <label>Legend</label>
+                    <hr class="line">
+                    <label>Legend<span class='small' id="units">m</span></label>
                     <div class="h12" id="gradient"></div>
                     <div class='grid txt-xs'>
                         <div id="legend-low" class='flex-child flex-child--grow align-l'>Low</div>
@@ -248,15 +268,18 @@
             var styleArray = {
                 'area': {
                     'colors': ['#edf8fb', '#bfd3e6', '#9ebcda', '#8c96c6', '#8856a7', '#810f7c'],
-                    'steps': [0, 1000, 2000, 3000, 4000, 5000]
+                    'steps': [0, 1000, 2000, 3000, 4000, 5000],
+                    'units': 'sqm'
                 },
                 'storeys': {
                     'colors': ['#ffffcc', '#c7e9b4', '#7fcdbb', '#41b6c4', '#2c7fb8', '#253494'],
-                    'steps': [0, 2, 4, 6, 8, 10]
+                    'steps': [0, 2, 4, 6, 8, 10],
+                    'units': 'no.'
                 },
                 'height': {
                     'colors': ['#f1eef6', '#d4b9da', '#c994c7', '#df65b0', '#dd1c77', '#980043'],
-                    'steps': [0, 25, 50, 75, 100, 125]
+                    'steps': [0, 25, 50, 75, 100, 125],
+                    'units': 'm'
                 }
             }
 
@@ -339,6 +362,7 @@
                     map.setPaintProperty('context', 'fill-extrusion-color', styler);
                 };
 
+                $('#units').text(styleLeg.units);
                 $('#legend-low').text(styleLeg.steps[0]);
                 $('#legend-high').text(styleLeg.steps[styleLeg.steps.length - 1]);
 
