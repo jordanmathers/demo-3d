@@ -99,20 +99,20 @@
         <div class="map-overlay-inner">
             <fieldset>
                 <label>Select layer</label>
-                <select id="layer" name="layer">
+                <select id="selectedLayer" name="layer">
                     <option value="existing">Existing</option>
-                    <option value="opt01">Option 01</option>
-                    <option value="opt02">Option 02</option>
-                    <option value="opt03">Option 03</option>
+                    <option value="option01">Option 01</option>
+                    <option value="option02">Option 02</option>
+                    <option value="option03">Option 03</option>
                 </select>
             </fieldset>
             <fieldset>
                 <label>Style</label>
-                <select id="style" name="style">
-                    <option value="nostyling">Default</option>
-                    <option value="area">Area (GFA)</option>
-                    <option value="levels">Storeys</option>
-                    <option value="levels">Height</option>
+                <select id="selectedStyle" name="style">
+                    <option value="default">Default</option>
+                    <option value="storeys">Storeys</option>
+                    <option value="height">Height</option>
+                    <option value="area">Area</option>
                 </select>
             </fieldset>
             <fieldset>
@@ -121,7 +121,6 @@
                     <div class="h12" id="gradient"></div>
                     <div class='grid txt-xs'>
                         <div id="legend-low" class='flex-child flex-child--grow align-l'>Low</div>
-                        <div id="legend-mid" class='flex-child--no-shrink w120 align-center'>Mid</div>
                         <div id="legend-high" class='flex-child flex-child--grow align-r'>High</div>
                     </div>
                 </div>
@@ -133,9 +132,6 @@
                     <div><span style="background-color: #B86B25"></span>5,000,000</div>
                     <div><span style="background-color: #CA8323"></span>2,500,000</div>
                     <div><span style="background-color: #DA9C20"></span>1,000,000</div>
-                    <div><span style="background-color: #E6B71E"></span>750,000</div>
-                    <div><span style="background-color: #EED322"></span>500,000</div>
-                    <div><span style="background-color: #F2F12D"></span>0</div>
                 </div>
             </fieldset>
         </div>
@@ -158,21 +154,20 @@
             var layers = ['context', 'existing', 'option01', 'option02', 'option03']
 
             layers.forEach(function (layer) {
-                
-                var sourcename = layer + '-s';
+
                 var opacity = 0.8;
                 var color = '#f0f0f0';
                 var visible = 'visible';
 
                 if (layer == 'context') {
                     opacity = 0.6;
-                } else if (layer != 'existing') {
+                }
+
+                if (layer != 'existing' && layer != 'context') {
                     visible = 'none'
                 }
 
-                alert(sourcename)
-
-                map.addSource(sourcename, {
+                map.addSource(layer + '-s', {
                     'type': 'geojson',
                     'generateId': true,
                     'data':
@@ -182,8 +177,8 @@
                 map.addLayer({
                     'id': layer,
                     'type': 'fill-extrusion',
-                    'source': sourcename,
-                    'layout': { 'visibility': visible},
+                    'source': layer + '-s',
+                    'layout': { 'visibility': visible },
                     'paint': {
                         'fill-extrusion-height': ['get', 'height'],
                         'fill-extrusion-base': ['get', 'min_height'],
@@ -197,125 +192,46 @@
                     }
                 });
 
+                var buildingId = null;
+                map.on('click', layer, function (e) {
+                    if (e.features.length > 0) {
+                        if (buildingId) {
+                            map.setFeatureState(
+                                { source: layer + '-s', id: buildingId },
+                                { clicked: false }
+                            );
+                        }
+                        buildingId = e.features[0].id;
+                        map.setFeatureState(
+                            { source: layer + '-s', id: buildingId },
+                            { clicked: true }
+                        );
+                    }
+                });
 
+                map.on('mouseenter', layer, function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
 
+                map.on('mouseleave', layer, function () {
+                    map.getCanvas().style.cursor = '';
+                });
             })
 
+            var selectedLayer = document.getElementById('selectedLayer');
 
-            var exId = null;
-            map.on('click', 'existing', function (e) {
-                if (e.features.length > 0) {
-                    if (exId) {
-                        map.setFeatureState(
-                            { source: 'existing-s', id: exId },
-                            { clicked: false }
-                        );
-                    }
-                    exId = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'existing-s', id: exId },
-                        { clicked: true }
-                    );
-                }
-            });
+            selectedLayer.onchange = function () {
 
-            var opt01Id = null;
-            map.on('click', 'opt01', function (e) {
-                if (e.features.length > 0) {
-                    if (opt01Id) {
-                        map.setFeatureState(
-                            { source: 'opt01-s', id: opt01Id },
-                            { clicked: false }
-                        );
-                    }
-                    opt01Id = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'opt01-s', id: opt01Id },
-                        { clicked: true }
-                    );
-                }
-            });
-
-            var opt02Id = null;
-            map.on('click', 'opt02', function (e) {
-                if (e.features.length > 0) {
-                    if (opt02Id) {
-                        map.setFeatureState(
-                            { source: 'opt02-s', id: opt02Id },
-                            { clicked: false }
-                        );
-                    }
-                    opt02Id = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'opt02-s', id: opt02Id },
-                        { clicked: true }
-                    );
-                }
-            });
-
-            var opt03Id = null;
-            map.on('click', 'opt03', function (e) {
-                if (e.features.length > 0) {
-                    if (opt03Id) {
-                        map.setFeatureState(
-                            { source: 'opt03-s', id: opt03Id },
-                            { clicked: false }
-                        );
-                    }
-                    opt03Id = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'opt03-s', id: opt03Id },
-                        { clicked: true }
-                    );
-                }
-            });
-
-            map.on('mouseenter', 'existing', function () {
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            map.on('mouseleave', 'existing', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            map.on('mouseenter', 'opt01', function () {
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            map.on('mouseleave', 'opt01', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            map.on('mouseenter', 'opt02', function () {
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            map.on('mouseleave', 'opt02', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            map.on('mouseenter', 'opt03', function () {
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            map.on('mouseleave', 'opt03', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            var layer = document.getElementById('layer');
-
-            layer.onchange = function () {
-
-                var layerval = layer.value;
+                var layerval = selectedLayer.value;
 
                 if (layerval === 'existing') {
-                    var others = ['opt01', 'opt02', 'opt03']
-                } else if (layerval === 'opt01') {
-                    var others = ['existing', 'opt02', 'opt03']
-                } else if (layerval === 'opt02') {
-                    var others = ['existing', 'opt01', 'opt03']
+                    var others = ['option01', 'option02', 'option03']
+                } else if (layerval === 'option01') {
+                    var others = ['existing', 'option02', 'option03']
+                } else if (layerval === 'option02') {
+                    var others = ['existing', 'option01', 'option03']
                 } else {
-                    var others = ['existing', 'opt01', 'opt02']
+                    var others = ['existing', 'option01', 'option02']
                 };
 
                 var visibility = map.getLayoutProperty(layerval, 'visibility');
@@ -327,110 +243,112 @@
                         map.setLayoutProperty(lay, 'visibility', 'none');
                     });
                 };
-
-
             };
 
-            var area = [
-                'interpolate',
-                ['linear'],
-                ['get', 'area'],
-                0,
-                '#F2F12D',
-                50,
-                '#EED322',
-                100,
-                '#E6B71E',
-                150,
-                '#DA9C20',
-                200,
-                '#CA8323',
-                250,
-                '#B86B25',
-                300,
-                '#A25626',
-                350,
-                '#8B4225',
-                400,
-                '#723122'
-            ];
+            var styleArray = {
+                'area': {
+                    'colors': ['#edf8fb', '#bfd3e6', '#9ebcda', '#8c96c6', '#8856a7', '#810f7c'],
+                    'steps': [0, 1000, 2000, 3000, 4000, 5000]
+                },
+                'storeys': {
+                    'colors': ['#ffffcc', '#c7e9b4', '#7fcdbb', '#41b6c4', '#2c7fb8', '#253494'],
+                    'steps': [0, 2, 4, 6, 8, 10]
+                },
+                'height': {
+                    'colors': ['#f1eef6', '#d4b9da', '#c994c7', '#df65b0', '#dd1c77', '#980043'],
+                    'steps': [0, 25, 50, 75, 100, 125]
+                }
+            }
 
-            var levels = [
-                'interpolate',
-                ['linear'],
-                ['get', 'estimatedLevels'],
-                0,
-                '#ffffcc',
-                1,
-                '#a1dab4',
-                2,
-                '#41b6c4',
-                3,
-                '#2c7fb8',
-                4,
-                '#253494'
-            ];
+            var legendStops = [00, 20, 40, 60, 80, 100];
 
-            var nostyling = [
-                'case',
-                ['boolean', ['feature-state', 'clicked'], false],
-                '#045a8d',
-                '#cccccc'
-            ];
-
-            var style = document.getElementById('style');
-
-            var legend = {
-                colorStops: [
-                    00,
-                    20,
-                    40,
-                    60,
-                    80,
-                    100
-                ],
-                colorPallete: [
-                    '#f0f9e8',
-                    '#ccebc5',
-                    '#a8ddb5',
-                    '#7bccc4',
-                    '#43a2ca',
-                    '#0868ac'
-                ]
-            };
-
+            var selectedStyle = document.getElementById('selectedStyle');
             var gradientLegend = document.getElementById('legend-gradient');
             var steppedLegend = document.getElementById('legend-stepped');
 
-            style.onchange = function (e) {
+            var styleLeg = null;
 
-                if (style.value === "area") {
-                    styler = area
+            selectedStyle.onchange = function () {
+
+                var styleVal = selectedStyle.value;
+                
+                gradientLegend.style.display = 'none';
+                steppedLegend.style.display = 'none';
+
+                if (styleVal == 'area') {
+                    styleLeg = styleArray.area;
                     gradientLegend.style.display = 'block';
-                    steppedLegend.style.display = 'none';
-                } else if (style.value === "nostyling") {
-                    styler = nostyling
-                    gradientLegend.style.display = 'none';
-                    steppedLegend.style.display = 'none';
+                } else if (styleVal == 'storeys') {
+                    styleLeg = styleArray.storeys;
+                    gradientLegend.style.display = 'block';
+                } else if (styleVal == 'height') {
+                    styleLeg = styleArray.height;
+                    gradientLegend.style.display = 'block';
                 } else {
-                    styler = levels
                     gradientLegend.style.display = 'none';
-                    steppedLegend.style.display = 'block';
                 };
 
-                map.setPaintProperty(layer.value, 'fill-extrusion-color', styler);
+                if (styleVal == 'height') {
+                    var styler = [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'tot_height'],
+                        styleLeg.steps[0], styleLeg.colors[0],
+                        styleLeg.steps[1], styleLeg.colors[1],
+                        styleLeg.steps[2], styleLeg.colors[2],
+                        styleLeg.steps[3], styleLeg.colors[3],
+                        styleLeg.steps[4], styleLeg.colors[4],
+                        styleLeg.steps[5], styleLeg.colors[5],
+                    ];
+                    var styler_context = [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'height'],
+                        styleLeg.steps[0], styleLeg.colors[0],
+                        styleLeg.steps[1], styleLeg.colors[1],
+                        styleLeg.steps[2], styleLeg.colors[2],
+                        styleLeg.steps[3], styleLeg.colors[3],
+                        styleLeg.steps[4], styleLeg.colors[4],
+                        styleLeg.steps[5], styleLeg.colors[5],
+                    ];
+                } else if (styleVal == 'default') {
+                    var styler = [
+                        'case',
+                        ['boolean', ['feature-state', 'clicked'], false],
+                        '#045a8d',
+                        '#f0f0f0'
+                    ];
+                } else {
+                    var styler = [
+                        'interpolate',
+                        ['linear'],
+                        ['get', styleVal],
+                        styleLeg.steps[0], styleLeg.colors[0],
+                        styleLeg.steps[1], styleLeg.colors[1],
+                        styleLeg.steps[2], styleLeg.colors[2],
+                        styleLeg.steps[3], styleLeg.colors[3],
+                        styleLeg.steps[4], styleLeg.colors[4],
+                        styleLeg.steps[5], styleLeg.colors[5],
+                    ];
+                };
 
-                $('#legend-low').text("test");
-                $('#legend-mid').text("test2");
-                $('#legend-high').text("test3");
+                map.setPaintProperty(selectedLayer.value, 'fill-extrusion-color', styler);
+                if (styleVal == 'height') {
+                    map.setPaintProperty('context', 'fill-extrusion-color', styler_context);
+                } else {
+                    map.setPaintProperty('context', 'fill-extrusion-color', styler);
+                };
+
+                $('#legend-low').text(styleLeg.steps[0]);
+                $('#legend-high').text(styleLeg.steps[styleLeg.steps.length - 1]);
 
                 var gradientCss = '(left';
 
-                for (var i = 0; i < legend.colorPallete.length; ++i) {
-                    gradientCss += ',' + legend.colorPallete[i] + ' ' + legend.colorStops[i] + "%";
+                for (var i = 0; i < styleLeg.colors.length; ++i) {
+                    gradientCss += ',' + styleLeg.colors[i] + ' ' + legendStops[i] + "%";
                     $('#gradient').css('background', '-webkit-linear-gradient' + gradientCss);
                 };
-            }
+            };
         });
 
     </script>
