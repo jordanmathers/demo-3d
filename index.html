@@ -144,12 +144,12 @@
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v10',
-            center: [151.206674, -33.889158],
+            center: [151.214160, -33.881191],
             pitch: 60,
             bearing: -45,
             zoom: 17
         });
-
+        
         map.on('load', function () {
 
             map.addSource('buildings-ex', {
@@ -204,6 +204,19 @@
                         '#045a8d',
                         '#cccccc'
                     ]
+                }
+            });
+
+            map.addLayer({
+                'id': 'context',
+                'type': 'fill-extrusion',
+                'source': 'context',
+                'paint': {
+                    'fill-extrusion-height': ['get', 'height'],
+                    'fill-extrusion-base': ['get', 'min_height'],
+                    'fill-extrusion-opacity': 0.7,
+                    'fill-extrusion-color':
+                        '#f0f0f0'
                 }
             });
 
