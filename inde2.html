@@ -155,136 +155,52 @@
 
         map.on('load', function () {
 
-            var layers = ['existing', 'option01', 'option02', 'option03']
+            var layers = ['context', 'existing', 'option01', 'option02', 'option03']
 
             layers.forEach(function (layer) {
+                
+                var sourcename = layer + '-s';
+                var opacity = 0.8;
+                var color = '#f0f0f0';
+                var visible = 'visible';
 
-                map.addSource(layer, {
+                if (layer == 'context') {
+                    opacity = 0.6;
+                } else if (layer != 'existing') {
+                    visible = 'none'
+                }
+
+                alert(sourcename)
+
+                map.addSource(sourcename, {
                     'type': 'geojson',
                     'generateId': true,
                     'data':
-                        'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/context.geojson'
+                        'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/options/' + layer + '.geojson'
                 });
+
+                map.addLayer({
+                    'id': layer,
+                    'type': 'fill-extrusion',
+                    'source': sourcename,
+                    'layout': { 'visibility': visible},
+                    'paint': {
+                        'fill-extrusion-height': ['get', 'height'],
+                        'fill-extrusion-base': ['get', 'min_height'],
+                        'fill-extrusion-opacity': opacity,
+                        'fill-extrusion-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#045a8d',
+                            color
+                        ]
+                    }
+                });
+
+
+
             })
 
-            map.addSource('context-s', {
-                'type': 'geojson',
-                'generateId': true,
-                'data':
-                    'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/context.geojson'
-            });
-
-            map.addSource('existing-s', {
-                'type': 'geojson',
-                'generateId': true,
-                'data':
-                    'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/options/01_ex.geojson'
-            });
-
-            map.addSource('opt01-s', {
-                'type': 'geojson',
-                'generateId': true,
-                'data':
-                    'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/options/02_opt1a.geojson'
-            });
-
-            map.addSource('opt02-s', {
-                'type': 'geojson',
-                'generateId': true,
-                'data':
-                    'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/options/03_opt2a.geojson'
-            });
-
-            map.addSource('opt03-s', {
-                'type': 'geojson',
-                'generateId': true,
-                'data':
-                    'https://raw.githubusercontent.com/jordanmathers/demo-3d/master/data/options/04_opt3a.geojson'
-            });
-
-            map.addLayer({
-                'id': 'context',
-                'type': 'fill-extrusion',
-                'source': 'context-s',
-                'paint': {
-                    'fill-extrusion-height': ['get', 'height'],
-                    'fill-extrusion-base': ['get', 'min_height'],
-                    'fill-extrusion-opacity': 0.7,
-                    'fill-extrusion-color':
-                        '#f0f0f0'
-                }
-            });
-
-            map.addLayer({
-                'id': 'existing',
-                'type': 'fill-extrusion',
-                'source': 'existing-s',
-                'paint': {
-                    'fill-extrusion-height': ['get', 'height'],
-                    'fill-extrusion-base': ['get', 'min_height'],
-                    'fill-extrusion-opacity': 0.7,
-                    'fill-extrusion-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'clicked'], false],
-                        '#045a8d',
-                        '#cccccc'
-                    ]
-                }
-            });
-
-            map.addLayer({
-                'id': 'opt01',
-                'type': 'fill-extrusion',
-                'source': 'opt01-s',
-                'layout': { 'visibility': 'none' },
-                'paint': {
-                    'fill-extrusion-height': ['get', 'height'],
-                    'fill-extrusion-base': ['get', 'min_height'],
-                    'fill-extrusion-opacity': 0.7,
-                    'fill-extrusion-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'clicked'], false],
-                        '#045a8d',
-                        '#cccccc'
-                    ]
-                }
-            });
-
-            map.addLayer({
-                'id': 'opt02',
-                'type': 'fill-extrusion',
-                'source': 'opt02-s',
-                'layout': { 'visibility': 'none' },
-                'paint': {
-                    'fill-extrusion-height': ['get', 'height'],
-                    'fill-extrusion-base': ['get', 'min_height'],
-                    'fill-extrusion-opacity': 0.7,
-                    'fill-extrusion-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'clicked'], false],
-                        '#045a8d',
-                        '#cccccc'
-                    ]
-                }
-            });
-
-            map.addLayer({
-                'id': 'opt03',
-                'type': 'fill-extrusion',
-                'source': 'opt03-s',
-                'layout': { 'visibility': 'none' },
-                'paint': {
-                    'fill-extrusion-height': ['get', 'height'],
-                    'fill-extrusion-base': ['get', 'min_height'],
-                    'fill-extrusion-opacity': 0.7,
-                    'fill-extrusion-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'clicked'], false],
-                        '#045a8d',
-                        '#cccccc'
-                    ]
-                }
-            });
 
             var exId = null;
             map.on('click', 'existing', function (e) {
