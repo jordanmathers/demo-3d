@@ -239,6 +239,8 @@
             zoom: 17
         });
 
+        map.addControl(new mapboxgl.NavigationControl());
+
         map.on('load', function () {
 
             var layers = ['context', 'existing', 'option01', 'option02', 'option03']
