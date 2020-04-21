@@ -3,7 +3,7 @@
 from ast import literal_eval
 import json
 
-with open('data/log.log') as f:
+with open('data/logv2.log') as f:
     content = f.readlines()
 
 content = [x.strip() for x in content] 
@@ -69,5 +69,5 @@ feature_collection = {
     "features": features
 }
 
-with open(f'data/context.geojson', 'w') as f:
+with open(f'data/options/contextv2.geojson', 'w') as f:
     json.dump(feature_collection, f)
